@@ -3,69 +3,84 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Dados</title>
+  <title>Lanza</title>
   <link href="https://fonts.googleapis.com/css2?family=Doto&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #000000;
-      color: white;
-      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', monospace;
       text-align: center;
-      padding-top: 40px;
+      padding-top: 30px;
     }
 
     h1 {
       font-family: 'Doto', sans-serif;
-      font-weight: bold;
       font-size: 2.5em;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .dado-container {
-      margin: 20px;
       display: inline-block;
+      margin: 20px;
     }
 
-    .dado {
-      font-size: 50px;
-      margin: 10px;
-      padding: 20px;
-      border-radius: 15px;
-      min-width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(5, 12px);
+      grid-template-rows: repeat(5, 12px);
+      gap: 4px;
       justify-content: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 10px;
     }
 
-    #rojo {
-      background-color: #ff4d4d;
+    .rojo-border {
+      border: 2px solid #ff4d4d;
     }
 
-    #azul {
-      background-color: #4d79ff;
+    .azul-border {
+      border: 2px solid #4d79ff;
     }
 
-    #verde {
-      background-color: #33cc33;
+    .verde-border {
+      border: 2px solid #33cc33;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      background-color: #222;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .on {
+      background-color: #fff;
+      box-shadow: 0 0 6px #fff;
+    }
+
+    .blink {
+      background-color: #fff !important;
+      box-shadow: 0 0 6px #fff !important;
     }
 
     button {
-      font-size: 1.2em;
-      padding: 10px 25px;
-      margin-top: 10px;
+      font-size: 1em;
+      padding: 8px 16px;
+      background-color: #111;
+      color: #fff;
       border: none;
-      background-color: #ff0000;
-      color: white;
-      font-family: Courier, monospace;
-      font-weight: bold;
-      border-radius: 10px;
+      border-radius: 6px;
       cursor: pointer;
+      margin-top: 5px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
     }
 
     button:hover {
-      background-color: #cc0000;
+      background-color: #222;
     }
   </style>
 </head>
@@ -74,18 +89,18 @@
   <h1>Lanza</h1>
 
   <div class="dado-container">
-    <div id="rojo" class="dado">🎲</div><br>
-    <button onclick="lanzarRojo()">Rojo</button>
+    <div id="rojo" class="matrix rojo-border"></div>
+    <button onclick="lanzarConAnimacion('rojo', dadoRojo)">Rojo</button>
   </div>
 
   <div class="dado-container">
-    <div id="azul" class="dado">🎲</div><br>
-    <button onclick="lanzarAzul()">Azul</button>
+    <div id="azul" class="matrix azul-border"></div>
+    <button onclick="lanzarConAnimacion('azul', dadoAzul)">Azul</button>
   </div>
 
   <div class="dado-container">
-    <div id="verde" class="dado">🎲</div><br>
-    <button onclick="lanzarVerde()">Verde</button>
+    <div id="verde" class="matrix verde-border"></div>
+    <button onclick="lanzarConAnimacion('verde', dadoVerde)">Verde</button>
   </div>
 
   <script>
@@ -93,21 +108,117 @@
     const dadoAzul = [1, 1, 6, 6, 8, 8];
     const dadoVerde = [3, 3, 5, 5, 7, 7];
 
-    function lanzarRojo() {
-      const valor = dadoRojo[Math.floor(Math.random() * 6)];
-      document.getElementById("rojo").textContent = valor;
+    const patrones = {
+      "1": [
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100"
+      ],
+      "2": [
+        "01110",
+        "00010",
+        "01110",
+        "01000",
+        "01110"
+      ],
+      "3": [
+        "01110",
+        "00010",
+        "01110",
+        "00010",
+        "01110"
+      ],
+      "4": [
+        "01010",
+        "01010",
+        "01110",
+        "00010",
+        "00010"
+      ],
+      "5": [
+        "01110",
+        "01000",
+        "01110",
+        "00010",
+        "01110"
+      ],
+      "6": [
+        "01110",
+        "01000",
+        "01110",
+        "01010",
+        "01110"
+      ],
+      "7": [
+        "01110",
+        "00010",
+        "00100",
+        "01000",
+        "01000"
+      ],
+      "8": [
+        "01110",
+        "01010",
+        "01110",
+        "01010",
+        "01110"
+      ],
+      "9": [
+        "01110",
+        "01010",
+        "01110",
+        "00010",
+        "01110"
+      ]
+    };
+
+    function crearMatriz(id) {
+      const container = document.getElementById(id);
+      container.innerHTML = '';
+      for (let i = 0; i < 25; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        container.appendChild(dot);
+      }
     }
 
-    function lanzarAzul() {
-      const valor = dadoAzul[Math.floor(Math.random() * 6)];
-      document.getElementById("azul").textContent = valor;
+    function mostrarNumero(id, numero) {
+      const container = document.getElementById(id);
+      const dots = container.querySelectorAll('.dot');
+      const patron = patrones[numero.toString()];
+      dots.forEach(dot => dot.classList.remove('on'));
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          if (patron[i][j] === "1") {
+            dots[i * 5 + j].classList.add('on');
+          }
+        }
+      }
     }
 
-    function lanzarVerde() {
-      const valor = dadoVerde[Math.floor(Math.random() * 6)];
-      document.getElementById("verde").textContent = valor;
+    function lanzarConAnimacion(id, dado) {
+      const container = document.getElementById(id);
+      const dots = container.querySelectorAll('.dot');
+      let parpadeos = 5;
+      let contador = 0;
+      const intervalo = setInterval(() => {
+        dots.forEach(dot => dot.classList.toggle('blink'));
+        contador++;
+        if (contador >= parpadeos) {
+          clearInterval(intervalo);
+          dots.forEach(dot => dot.classList.remove('blink'));
+          const valor = dado[Math.floor(Math.random() * dado.length)];
+          mostrarNumero(id, valor);
+        }
+      }, 100);
     }
+
+    crearMatriz("rojo");
+    crearMatriz("azul");
+    crearMatriz("verde");
   </script>
-
 </body>
 </html>
+
