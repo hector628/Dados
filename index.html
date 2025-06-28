@@ -103,6 +103,8 @@
     <button onclick="lanzarConAnimacion('verde', dadoVerde)">Verde</button>
   </div>
 
+  <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
   <script>
     const dadoRojo = [2, 2, 4, 4, 9, 9];
     const dadoAzul = [1, 1, 6, 6, 8, 8];
@@ -174,6 +176,8 @@
       ]
     };
 
+    const beep = document.getElementById("beep-sound");
+
     function crearMatriz(id) {
       const container = document.getElementById(id);
       container.innerHTML = '';
@@ -203,6 +207,8 @@
       const dots = container.querySelectorAll('.dot');
       let parpadeos = 5;
       let contador = 0;
+      beep.currentTime = 0;
+      beep.play();
       const intervalo = setInterval(() => {
         dots.forEach(dot => dot.classList.toggle('blink'));
         contador++;
@@ -221,4 +227,3 @@
   </script>
 </body>
 </html>
-
